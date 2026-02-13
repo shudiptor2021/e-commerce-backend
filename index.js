@@ -21,6 +21,7 @@ app.use(cookieParser());
 app.use(
     cors({
         origin: "https://e-commerce-dokan.vercel.app",
+        // origin: "http://localhost:3000",
         credentials: true,
     })
 )
