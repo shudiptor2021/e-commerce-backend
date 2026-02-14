@@ -1,7 +1,7 @@
 // external inports
-const fs = require("fs");
-const util = require("util");
-const unlinkFile = util.promisify(fs.unlink);
+// const fs = require("fs");
+// const util = require("util");
+// const unlinkFile = util.promisify(fs.unlink);
 
 // internal imports
 const uploadToCloudinary = require("../../helpers/upload_cloudinary");
@@ -42,32 +42,38 @@ function imageUpload(req, res, next) {
         if (thumbnail || images.length) {
           // Upload all to Cloudinary
           if (thumbnail) {
-            const result = await uploadToCloudinary(thumbnail.path);
+            // const result = await uploadToCloudinary(thumbnail.path);
+            const result = await uploadToCloudinary(thumbnail.buffer);
+
             req.body.thumbnail = {
               url: result.secure_url,
               public_id: result.public_id,
             };
 
             // Delete the local file after upload
-            if (result) {
-              await unlinkFile(thumbnail.path);
-            }
+            // if (result) {
+            //   await unlinkFile(thumbnail.path);
+            // }
           }
 
           if (images.length) {
+            // const uploadPromises = images.map((img) =>
+            //   uploadToCloudinary(img.path),
+            // );
             const uploadPromises = images.map((img) =>
-              uploadToCloudinary(img.path),
+              uploadToCloudinary(img.buffer),
             );
+
             const results = await Promise.all(uploadPromises);
             req.body.images = results.map((res) => ({
               url: res.secure_url,
               public_id: res.public_id,
             }));
 
-            if (results) {
-              const deletePromises = images.map((img) => unlinkFile(img.path));
-              await Promise.all(deletePromises);
-            }
+            // if (results) {
+            //   const deletePromises = images.map((img) => unlinkFile(img.path));
+            //   await Promise.all(deletePromises);
+            // }
           }
         } else {
           // No file upload, possibly json body
